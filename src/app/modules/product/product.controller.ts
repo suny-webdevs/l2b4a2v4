@@ -1,7 +1,11 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import { productService } from "./product.service"
 
-const createProduct = async (req: Request, res: Response) => {
+const createProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const product = req.body
     const data = await productService.createProduct(product)
@@ -11,15 +15,11 @@ const createProduct = async (req: Request, res: Response) => {
       data,
     })
   } catch (error) {
-    res.json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    })
+    next(error)
   }
 }
 
-const getProducts = async (req: Request, res: Response) => {
+const getProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await productService.getProducts()
     res.json({
@@ -28,15 +28,11 @@ const getProducts = async (req: Request, res: Response) => {
       data,
     })
   } catch (error) {
-    res.json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    })
+    next(error)
   }
 }
 
-const getProduct = async (req: Request, res: Response) => {
+const getProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id
     const data = await productService.getProduct(id)
@@ -46,15 +42,15 @@ const getProduct = async (req: Request, res: Response) => {
       data,
     })
   } catch (error) {
-    res.json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    })
+    next(error)
   }
 }
 
-const updateProduct = async (req: Request, res: Response) => {
+const updateProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const product = req.body
     const id = req.params.id
@@ -65,15 +61,15 @@ const updateProduct = async (req: Request, res: Response) => {
       data,
     })
   } catch (error) {
-    res.json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    })
+    next(error)
   }
 }
 
-const deleteProduct = async (req: Request, res: Response) => {
+const deleteProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id
     const data = await productService.deleteProduct(id)
@@ -83,11 +79,7 @@ const deleteProduct = async (req: Request, res: Response) => {
       data,
     })
   } catch (error) {
-    res.json({
-      success: false,
-      message: "Something went wrong",
-      error,
-    })
+    next(error)
   }
 }
 

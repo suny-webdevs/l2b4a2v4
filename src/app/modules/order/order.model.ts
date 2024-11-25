@@ -20,9 +20,9 @@ const orderSchema = new Schema<IOrder>({
     required: [true, "Quantity is required"],
     min: [1, "Quantity must be at least 1"],
   },
-  totalAmount: {
+  totalPrice: {
     type: Number,
-    required: [true, "Total amount is required"],
+    required: [true, "Total price is required"],
     min: [0, "Total price must be positive number"],
   },
 })
