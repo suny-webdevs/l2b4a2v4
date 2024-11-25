@@ -5,6 +5,6 @@ const handleError = (err, req, res, next) => {
         message: err.message || "Something went wrong",
         success: false,
         error: err,
-        stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+        stack: err.stack || undefined,
     });
 };

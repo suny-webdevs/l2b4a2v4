@@ -13,9 +13,26 @@ exports.orderService = void 0;
 const product_model_1 = require("../product/product.model");
 const order_model_1 = require("./order.model");
 const createOrder = (order) => __awaiter(void 0, void 0, void 0, function* () {
-    const { product } = order;
-    const productId = yield product_model_1.Bicycle.findById(product);
-    const data = yield order_model_1.Order.create(order);
+    const { email, product: productId, quantity } = order;
+    const product = yield product_model_1.Bicycle.findById(productId);
+    if (!product) {
+        throw new Error("Product not found");
+    }
+    if (!product.inStock || product.quantity < quantity) {
+        throw new Error("Insufficient stock available");
+    }
+    const totalPrice = product.price * quantity;
+    product.quantity -= quantity;
+    if (product.quantity === 0) {
+        product.inStock = false;
+    }
+    yield product.save();
+    const data = yield order_model_1.Order.create({
+        email,
+        product,
+        quantity,
+        totalPrice,
+    });
     return data;
 });
 const getOrders = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,7 +44,7 @@ const getTotalRevenue = () => __awaiter(void 0, void 0, void 0, function* () {
         { $group: { _id: null, totalRevenue: { $sum: "$totalPrice" } } },
         { $project: { totalRevenue: 1 } },
     ]);
-    return data;
+    return data.length > 0 ? data : { totalPrice: 0 };
 });
 const getOrder = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const data = yield order_model_1.Order.findById(id);

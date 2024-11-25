@@ -3,9 +3,33 @@ import { IOrder } from "./order.interface"
 import { Order } from "./order.model"
 
 const createOrder = async (order: IOrder) => {
-  const { product } = order
-  const productId = await Bicycle.findById(product)
-  const data = await Order.create(order)
+  const { email, product: productId, quantity } = order
+  const product = await Bicycle.findById(productId)
+
+  if (!product) {
+    throw new Error("Product not found")
+  }
+
+  if (!product.inStock || product.quantity < quantity) {
+    throw new Error("Insufficient stock available")
+  }
+
+  const totalPrice = product.price * quantity
+
+  product.quantity -= quantity
+
+  if (product.quantity === 0) {
+    product.inStock = false
+  }
+
+  await product.save()
+
+  const data = await Order.create({
+    email,
+    product,
+    quantity,
+    totalPrice,
+  })
   return data
 }
 
@@ -19,7 +43,7 @@ const getTotalRevenue = async () => {
     { $group: { _id: null, totalRevenue: { $sum: "$totalPrice" } } },
     { $project: { totalRevenue: 1 } },
   ])
-  return data
+  return data.length > 0 ? data : { totalPrice: 0 }
 }
 
 const getOrder = async (id: string) => {

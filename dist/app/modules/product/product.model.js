@@ -24,5 +24,5 @@ const productSchema = new mongoose_1.Schema({
         min: [1, "Quantity must be at least 1"],
     },
     inStock: { type: Boolean, required: [true, "In Stock is required"] },
-});
+}, { timestamps: true });
 exports.Bicycle = (0, mongoose_1.model)("Bicycle", productSchema);
